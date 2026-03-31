@@ -1,20 +1,20 @@
 'use client'
 
 import { useState } from 'react'
+import { createHabit } from '../../lib/habitService'
 
 export default function HabitsPage() {
   const [showForm, setShowForm] = useState(false)
   const [habit, setHabit] = useState({
     name: '',
-    target: ''
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('New habit:', habit)
+    createHabit(habit.name)
 
     // reset + close
-    setHabit({ name: '', target: '' })
+    setHabit({ name: '' })
     setShowForm(false)
   }
 
@@ -45,18 +45,6 @@ export default function HabitsPage() {
               value={habit.name}
               onChange={(e) =>
                 setHabit({ ...habit, name: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div>
-            <input
-              type="text"
-              placeholder="Target (e.g. 30 mins)"
-              value={habit.target}
-              onChange={(e) =>
-                setHabit({ ...habit, target: e.target.value })
               }
               required
             />
