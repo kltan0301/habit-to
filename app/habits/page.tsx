@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { createHabit, initApp, Habit } from '../../lib/habitService'
 
@@ -10,6 +10,13 @@ export default function HabitsPage() {
     name: '',
   })
   const [habits, setHabits] = useState<Habit[]>(() => initApp().habits)
+  const [petHappiness, setPetHappiness] = useState(3) // Start at neutral (3/5)
+
+  // Update pet happiness based on habits
+  React.useEffect(() => {
+    const happinessLevel = Math.min(5, Math.max(1, Math.floor(habits.length / 2) + 1))
+    setPetHappiness(happinessLevel)
+  }, [habits])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,10 +24,27 @@ export default function HabitsPage() {
     const data = initApp()
     setHabits(data.habits)
 
+    // Increase pet happiness when creating habits
+    setPetHappiness(prev => Math.min(5, prev + 1))
+
     // reset + close
     setHabit({ name: '' })
     setShowForm(false)
   }
+
+  // Pet image mappings for each happiness level
+  const getPetDisplay = (level: number) => {
+    const pets = {
+      1: { image: '/leaf-sad.png', color: '#8B5CF6', name: 'Very Sad' },
+      2: { image: '/leaf-tired.png', color: '#EF4444', name: 'Sad' },
+      3: { image: '/leaf-neutral.png', color: '#F59E0B', name: 'Neutral' },
+      4: { image: '/leaf-happy.png', color: '#10B981', name: 'Happy' },
+      5: { image: '/leaf-happy.png', color: '#3B82F6', name: 'Very Happy' } // Reusing happy for max level
+    }
+    return pets[level as keyof typeof pets] || pets[3]
+  }
+
+  const currentPet = getPetDisplay(petHappiness)
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -102,6 +126,77 @@ export default function HabitsPage() {
             {showForm ? 'Close' : 'Add Habit'}
           </span>
         </button>
+      </div>
+
+      {/* Cute Pet Display */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: '30px',
+        padding: '40px',
+        backgroundColor: '#fef7ed',
+        borderRadius: '20px',
+        border: '3px solid #fed7aa',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+        maxWidth: '400px',
+        margin: '30px auto'
+      }}>
+        <img
+          src={currentPet.image}
+          alt={`Pet - ${currentPet.name}`}
+          style={{
+            width: '160px',
+            height: '160px',
+            marginBottom: '16px',
+            imageRendering: 'pixelated',
+            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+          }}
+        />
+        <div style={{
+          fontSize: '24px',
+          fontWeight: '700',
+          color: currentPet.color,
+          marginBottom: '8px',
+          textAlign: 'center'
+        }}>
+          Your Pet
+        </div>
+        <div style={{
+          fontSize: '16px',
+          color: '#6b7280',
+          marginBottom: '12px',
+          fontWeight: '500'
+        }}>
+          Happiness Level: {petHappiness}/5
+        </div>
+        <div style={{
+          display: 'flex',
+          gap: '6px'
+        }}>
+          {[1, 2, 3, 4, 5].map(level => (
+            <div
+              key={level}
+              style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                backgroundColor: level <= petHappiness ? currentPet.color : '#e5e7eb',
+                border: '2px solid #d1d5db',
+                transition: 'all 0.3s ease'
+              }}
+            />
+          ))}
+        </div>
+        <div style={{
+          fontSize: '14px',
+          color: '#9ca3af',
+          marginTop: '12px',
+          textAlign: 'center',
+          fontStyle: 'italic'
+        }}>
+          {currentPet.name} • Create habits to make me happier! 🌱
+        </div>
       </div>
 
       {/* Form */}
