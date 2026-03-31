@@ -86,6 +86,8 @@ export function createHabit(name: string): Habit[] {
     name: name.trim(),
   };
   data.habits.push(newHabit);
+  // Regenerate checklist to include the new habit
+  data.checklist = generateChecklist(data.habits);
   saveData(data);
   return data.habits;
 }
@@ -107,4 +109,9 @@ export function toggleHabit(habitId: string): { checklist: ChecklistItem[]; coin
   // If already completed, do nothing
 
   return { checklist: data.checklist, coins: data.coins };
+}
+// Get all saved habits
+export async function getHabits(): Promise<Habit[]> {
+  const data = await loadData();
+  return data ? data.habits : [];
 }

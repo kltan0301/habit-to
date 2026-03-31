@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import Link from 'next/link'
 import { createHabit, initApp, Habit } from '../../lib/habitService'
 
 export default function HabitsPage() {
@@ -8,12 +9,7 @@ export default function HabitsPage() {
   const [habit, setHabit] = useState({
     name: '',
   })
-  const [habits, setHabits] = useState<Habit[]>([])
-
-  useEffect(() => {
-    const data = initApp()
-    setHabits(data.habits)
-  }, [])
+  const [habits, setHabits] = useState<Habit[]>(() => initApp().habits)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,17 +24,51 @@ export default function HabitsPage() {
 
   return (
     <div style={{ padding: '2rem' }}>
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div style={{ 
-          fontSize: '28px', 
-          fontWeight: '700', 
-          color: '#1f2937',
-          letterSpacing: '-0.5px',
-          textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-        }}>
-          <span style={{ color: '#3b82f6' }}>habit</span>
-          <span style={{ color: '#6b7280' }}>-</span>
-          <span style={{ color: '#10b981' }}>to</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <div style={{ 
+            fontSize: '28px', 
+            fontWeight: '700', 
+            color: '#1f2937',
+            letterSpacing: '-0.5px',
+            textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+            marginBottom: '10px'
+          }}>
+            <span style={{ color: '#3b82f6' }}>habit</span>
+            <span style={{ color: '#6b7280' }}>-</span>
+            <span style={{ color: '#10b981' }}>to</span>
+          </div>
+          
+          {/* Back Button */}
+          <Link href="/">
+            <button
+              style={{
+                fontSize: '16px',
+                padding: '6px 12px',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontWeight: '500',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              onMouseOver={(e) => {
+                (e.target as HTMLButtonElement).style.transform = 'scale(1.05)';
+                (e.target as HTMLButtonElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+              }}
+              onMouseOut={(e) => {
+                (e.target as HTMLButtonElement).style.transform = 'scale(1)';
+                (e.target as HTMLButtonElement).style.boxShadow = 'none';
+              }}
+            >
+              ← Back
+            </button>
+          </Link>
         </div>
         
         {/* Toggle Button */}
